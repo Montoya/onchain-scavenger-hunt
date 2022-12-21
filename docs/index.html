@@ -1,19 +1,194 @@
 <!doctype html>
 <html>
   <head>
-    <title>Get the MobyMask Snap</title>
+    <title>Calling All Adventurers</title>
     <link rel="icon" type="image/svg" href="./icon.svg"/>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Berkshire+Swash&display=swap" rel="stylesheet">
     <style type="text/css">
+
+/* Thank you to https://heropatterns.com and 
+https://codepen.io/AgnusDei/pen/NWPbOxL */
+
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+html, body {
+	height: 100%;
+}
+
 body { 
-  background-color: #4c4c22;
+  background-color: #1A0159;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='152' height='152' viewBox='0 0 152 152'%3E%3Cg fill-rule='evenodd'%3E%3Cg id='temple' fill='%23caac4c' fill-opacity='0.4'%3E%3Cpath d='M152 150v2H0v-2h28v-8H8v-20H0v-2h8V80h42v20h20v42H30v8h90v-8H80v-42h20V80h42v40h8V30h-8v40h-42V50H80V8h40V0h2v8h20v20h8V0h2v150zm-2 0v-28h-8v20h-20v8h28zM82 30v18h18V30H82zm20 18h20v20h18V30h-20V10H82v18h20v20zm0 2v18h18V50h-18zm20-22h18V10h-18v18zm-54 92v-18H50v18h18zm-20-18H28V82H10v38h20v20h38v-18H48v-20zm0-2V82H30v18h18zm-20 22H10v18h18v-18zm54 0v18h38v-20h20V82h-18v20h-20v20H82zm18-20H82v18h18v-18zm2-2h18V82h-18v18zm20 40v-18h18v18h-18zM30 0h-2v8H8v20H0v2h8v40h42V50h20V8H30V0zm20 48h18V30H50v18zm18-20H48v20H28v20H10V30h20V10h38v18zM30 50h18v18H30V50zm-2-40H10v18h18V10z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  margin:0;
+  padding:0;
+}
+
+#main {
+  position: relative;
+  width: 100%;
+  height: auto;
+}
+
+#parchment {
+  position: absolute;
+  display: flex;
+	width: 90%;
+  max-width:860px; 
+  /* center page with absolute position */
+  top: 0%; left: 50%; transform: translate(-50%, 0);
+  margin: 2em 0;
+	padding: 4em;
+	box-shadow: 2px 3px 20px black, 0 0 125px #8f5922 inset;
+	background: #fffef0;
+  /* v2.1 : borders effect with SVG : try to play with scale to change them */
+  filter: url(#wavy2);
+  /* v2.2 : Noise added for a vellum paper effect */
+  background-image: url(data:image/png;base64,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);
+}
+
+#main p, #main ul {
+  font-size: 1.2rem;
+  line-height:1.4; 
+  font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  color: #3b3b3b;
+  margin: .75em 0;
+  opacity:0.88;
+}
+#main ul { 
+  padding-left:2.25rem;
+  list-style-type:square;
+}
+#main ul li { 
+  margin-bottom: 0.75em; 
+}
+
+div p::first-letter {
+  float: left;
+  font-size:2.4rem;
+  line-height:1.0;
+  text-shadow: 1px 1px 1px #000;
+  margin: 0 0.75rem 0 0;
+}
+
+#contain {
+  position: relative;
+ 	display: flex;
+  flex-direction: column;
+	width: 90%;
+  max-width:860px;
+  height: auto;
+  margin: 0 auto;
+	padding: 4em;
+}
+
+#inkTitle, #signature {
+  font-size: 3rem;
+	font-family: "Berkshire Swash", serif;
+  text-align: center;
+  line-height: 3.0;
+	color: black;
+	opacity: 0.6;
+}
+
+#labarum {
+  width: 20%;
+  margin-left: calc((100% - 20%) / 2);
+  height: auto;
+}
+
+.cachet {
+  height:160px; 
+  width: auto;
+  margin: 2rem 0 2rem auto;
+  opacity:0.4;
+}
+
+#labarum img, .cachet img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+#signature {
+  text-align: right;
+  font-size: 2rem;
+  line-height:1.5; 
 }
     </style>
   </head>
   <body>
-    Hello!
+
+    <div id="main">
+      <div id="parchment"></div>
+      <div id="contain">
+        <div id="inkTitle">Calling All Adventurers</div>
+        <p>The siren song of the unknown beckons you. What treasures await among the vast frontier? Will you discover them all?</p>
+        <ul>
+          <li>
+            A warm hug around a cold diamond
+          </li>
+          <li>
+            Access to the open waters
+          </li>
+          <li>
+            A cryptid guides your funds, again
+          </li>
+          <li>
+            Before apes, before punks, they were born to breed
+          </li>
+          <li>
+            Good hearts take aim, but first, form an alliance
+          </li>
+          <li>
+            Out of thin air, this one is ours
+          </li>
+          <li>
+            For a DAO, it's more than just a bit
+          </li>
+          <li>
+            Surfers need these 
+          </li>
+          <li>
+            Going out of this world? Afraid words can hurt you? This one is for you
+          </li>
+          <li>
+            You can burn these over an open fire 
+          </li>
+        </ul>
+        <div class="cachet"><img src="eth-diamond-purple.png" height="160px"></div>
+        <div id="signature">May you find favor on your journey,<br />Imperator Christian Montoya</div>
+      </div>
+    </div>
+    
+    <svg>
+      <filter id="wavy2">
+        <feTurbulence x="0" y="0" baseFrequency="0.02" numOctaves="5" seed="1" />
+        <feDisplacementMap in="SourceGraphic" scale="20" />
+      </filter>
+    </svg>
+
+    <script type="text/javascript">
+// First Call to define "parchment" height
+document.onload = ScrollHeight();
+
+// Redraw when viewport is modified
+window.addEventListener('resize', function(event){
+  ScrollHeight();
+});
+
+
+function ScrollHeight() {
+  var content = document.querySelector('#parchment');
+  var container = document.querySelector('#contain');
+
+  // SVG feTurbulence can modify all others elements, fo this reason "parchment" is in another <div> and in absolute position.
+  // so for a better effect, absolute height is defined by his content.
+  content.style.height = container.offsetHeight + 'px';
+}
+    </script>
+    
   </body>
 </html>
