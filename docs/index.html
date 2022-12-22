@@ -57,6 +57,17 @@ body {
   margin: .75em 0;
   opacity:0.88;
 }
+#buttons { 
+  padding-left:2.25rem;
+}
+button { 
+  background:rgba(255,255,255,0.4);
+  border:3px outset #caac4c; 
+  border-radius:4px;
+  font-family:inherit; 
+  font-size:1.2rem;
+  padding:6px 8px; 
+}
 #main ul { 
   padding-left:2.25rem;
   list-style-type:square;
@@ -126,6 +137,9 @@ div p::first-letter {
       <div id="contain">
         <div id="inkTitle">Calling All Adventurers</div>
         <p>The siren song of the unknown beckons you. What treasures await among the vast frontier? Will you discover them all?</p>
+        <p id="buttons">
+          <button id="connect">Connect</button> &nbsp; <button id="check">Check Progress</button>
+        </p>
         <ul>
           <li>
             A warm hug around a cold diamond
