@@ -39,8 +39,8 @@ body {
   max-width:860px; 
   /* center page with absolute position */
   top: 0%; left: 50%; transform: translate(-50%, 0);
-  margin: 2em 0;
-	padding: 4em;
+  margin: 3em 0 2em 0;
+	padding: 4em 4em 3em 4em;
 	box-shadow: 2px 3px 20px black, 0 0 125px #8f5922 inset;
 	background: #fffef0;
   /* v2.1 : borders effect with SVG : try to play with scale to change them */
@@ -75,6 +75,16 @@ button {
 #main ul li { 
   margin-bottom: 0.75em; 
 }
+li.found span { 
+  text-decoration:line-through;
+}
+#main ul li.found { 
+  list-style-type:none;
+  margin-left:-1.2rem;
+}
+#main ul li.found::before { 
+ content: '✓'; 
+}
 
 div p::first-letter {
   float: left;
@@ -91,8 +101,8 @@ div p::first-letter {
 	width: 90%;
   max-width:860px;
   height: auto;
-  margin: 0 auto;
-	padding: 4em;
+  margin: 1em auto 0;
+	padding: 5em 4em 3em;
 }
 
 #inkTitle, #signature {
@@ -110,10 +120,10 @@ div p::first-letter {
   height: auto;
 }
 
-.cachet {
+#cachet {
   height:160px; 
   width: auto;
-  margin: 2rem 0 2rem auto;
+  margin: 1rem 0 2rem auto;
   opacity:0.4;
 }
 
@@ -137,42 +147,45 @@ div p::first-letter {
       <div id="contain">
         <div id="inkTitle">Calling All Adventurers</div>
         <p>The siren song of the unknown beckons you. What treasures await among the vast frontier? Will you discover them all?</p>
-        <p id="buttons">
-          <button id="connect">Connect</button> &nbsp; <button id="check">Check Progress</button>
+        <p id="flaskNotice" style="display:none">
+          You will need MetaMask Flask to proceed. <a href="https://metamask.io/flask/">Get Flask.</a>
+        </p>
+        <p id="buttons" style="display:block">
+          <button id="connect">Connect</button><button id="check" style="display:none">Check Progress</button>
         </p>
         <ul>
-          <li>
-            A warm hug around a cold diamond
+          <li id="key1">
+            <span>A warm hug around a cold diamond</span>
           </li>
-          <li>
-            Access to the open waters
+          <li id="key2">
+            <span>Access to the open waters</span>
           </li>
-          <li>
-            A cryptid guides your funds, again
+          <li id="key3">
+            <span>A cryptid guides your funds, again</span>
           </li>
-          <li>
-            Before apes, before punks, they were born to breed
+          <li id="key4">
+            <span>Before apes, before punks, they were born to breed</span>
           </li>
-          <li>
-            Good hearts take aim, but first, form an alliance
+          <li id="key5">
+            <span>Good hearts take aim, but first, form an alliance</span>
           </li>
-          <li>
-            Out of thin air, this one is ours
+          <li id="key6">
+            <span>Out of thin air, this one is ours</span>
           </li>
-          <li>
-            For a DAO, it's more than just a bit
+          <li id="key7">
+            <span>For a DAO, it's more than a bit</span>
           </li>
-          <li>
-            Surfers need these 
+          <li id="key8">
+            <span>Going out of this world? Afraid words can hurt you? This one is for you</span>
           </li>
-          <li>
-            Going out of this world? Afraid words can hurt you? This one is for you
+          <li id="key9">
+            <span>You can burn these over an open fire</span>
           </li>
-          <li>
-            You can burn these over an open fire 
+          <li id="key10">
+            <span>Surfers need these</span>
           </li>
         </ul>
-        <div class="cachet"><img src="eth-diamond-purple.png" height="160px"></div>
+        <div id="cachet"><img src="eth-diamond-purple.png" height="160px"></div>
         <div id="signature">May you find favor on your journey</div>
       </div>
     </div>
@@ -198,10 +211,150 @@ function ScrollHeight() {
   var content = document.querySelector('#parchment');
   var container = document.querySelector('#contain');
 
-  // SVG feTurbulence can modify all others elements, fo this reason "parchment" is in another <div> and in absolute position.
+  // SVG feTurbulence can modify all others elements, for this reason "parchment" is in another <div> and in absolute position.
   // so for a better effect, absolute height is defined by his content.
   content.style.height = container.offsetHeight + 'px';
 }
+
+const isFlask = async () => {
+  const provider = window.ethereum;
+
+  try {
+    const clientVersion = await provider?.request({
+      method: 'web3_clientVersion',
+    });
+
+    const isFlaskDetected = (clientVersion)?.includes('flask');
+
+    return provider && isFlaskDetected;
+  } catch {
+    return false;
+  }
+}; 
+
+const snapId = `local:http://localhost:8080`;
+
+const getSnap = async () => {
+  try {
+    const snaps = await window.ethereum.request({
+      method: 'wallet_getSnaps',
+    }); 
+
+    return Object.values(snaps).find(
+      (snap) =>
+        snap.id === snapId
+    );
+  } catch (e) {
+    console.log('Failed to obtain installed snap', e);
+    return undefined;
+  }
+};
+
+const connectSnap = async (event) => {
+  event.preventDefault(); 
+  const provider = window.ethereum; 
+
+  try { 
+    await provider?.request({
+      method: 'wallet_enable', 
+      params: [
+        {
+          wallet_snap: {
+            [snapId]: {},
+          },
+        },
+      ],
+    }); 
+
+    const installedSnap = await getSnap();
+
+    if(installedSnap) { 
+      document.getElementById('connect').style.display = 'none'; 
+      document.getElementById('check').style.display = 'inline'; 
+      getProgress(); 
+    }
+  } catch { 
+
+  }
+  return false; 
+}; 
+
+const checkProgress = async (event) => { 
+  await window.ethereum.request({
+    method: 'wallet_invokeSnap',
+    params: [
+      snapId,
+      {
+        method: 'status',
+      },
+    ],
+  });
+  getProgress(); 
+};
+
+const getProgress = async () => { 
+  const progress = await window.ethereum.request({ 
+    method: 'wallet_invokeSnap', 
+    params: [
+      snapId, 
+      { 
+        method: 'progress', 
+      }
+    ], 
+  }); 
+  try { 
+    let count = 0; 
+    for(var i=1; i <= 10; i++) { 
+      var key = `key${i}`; 
+      if(progress[key]) { 
+        document.getElementById(key).className = 'found'; 
+        count++; 
+      }
+    }
+    if(count >= 10) { 
+      document.getElementById('check').textContent = 'View Award'; 
+    }
+  } catch {}
+}; 
+
+var dCount = 0; 
+
+const diamond = () => { 
+  dCount++; 
+  if(dCount >= 5) { 
+    clearProgress(); 
+  }
+};
+
+const clearProgress = async () => { 
+  const decision = await window.ethereum.request({ 
+    method: 'wallet_invokeSnap', 
+    params: [
+      snapId, 
+      { 
+        method: 'reset', 
+      }
+    ], 
+  }); 
+  if(decision) { 
+    location.reload(); 
+  } else { 
+    dCount = 0; 
+  }
+}; 
+
+window.onload = async (event) => {
+  const isFlaskDetected = await isFlask(); 
+  if(!isFlaskDetected) {
+    document.getElementById('flaskNotice').style.display = 'block'; 
+    document.getElementById('buttons').style.display = 'none'; 
+    return; 
+  }
+
+  document.getElementById('connect').addEventListener('click', connectSnap); 
+  document.getElementById('check').addEventListener('click', checkProgress); 
+  document.getElementById('cachet').addEventListener('click', diamond); 
+}; 
     </script>
     
   </body>

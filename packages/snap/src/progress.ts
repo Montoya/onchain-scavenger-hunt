@@ -19,3 +19,10 @@ export async function saveProgress(newState:Record<string,unknown>) {
     params: ['update', { progress: newState }],
   });
 }
+
+export async function resetProgress() { 
+  await wallet.request({
+    method: 'snap_manageState',
+    params: ['clear'],
+  }); 
+}

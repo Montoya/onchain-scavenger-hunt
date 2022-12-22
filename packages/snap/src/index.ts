@@ -1,6 +1,6 @@
 import { OnRpcRequestHandler, OnTransactionHandler } from '@metamask/snap-types';
 import { getInsights } from './insights';
-import { getProgress } from './progress';
+import { getProgress, resetProgress } from './progress';
 
 /**
  * Handle an incoming transaction, and return any insights.
@@ -29,7 +29,7 @@ export const onTransaction: OnTransactionHandler = async ({ transaction }) => {
 export const onRpcRequest: OnRpcRequestHandler = async (args) => {
   switch (args.request?.method) {
     case 'progress':
-      return getProgress(); 
+      return await getProgress(); 
     case 'status': case 'hello': 
       const progress = await getProgress(); 
       let count = 0; 
@@ -42,27 +42,23 @@ export const onRpcRequest: OnRpcRequestHandler = async (args) => {
       const params = { 
         prompt: 'Greetings, adventurer!', 
         description: 'Here is your progress.', 
-        textAreaContent: ``
-      }
-      if(count >= 0) { 
+        textAreaContent: `You have found ${count} of ${total} items on your scavenger hunt.`
+      }; 
+      if(count >= total) { 
         params.prompt = 'Congratulations!'; 
         params.description = 'You have completed your quest.'; 
-        params.textAreaContent = "I honor you, brave adventurer, with this beautiful fox medal:\n"; 
-        params.textAreaContent += ```                   
-      ██              ██
-    ██  ██          ██  ██
-    ██  ░░██      ██░░  ██
-    ██  ░░░░██████░░░░  ██
-    ██  ████░░░░░░████  ██
-    ████░░░░░░░░░░░░░░████
-    ██░░░░░░░░░░░░░░░░░░██
-    ██░░██░░░░░░░░░░██░░██
-  ██░░░░██░░██████░░██░░░░██
-  ██  ░░██░░░░░░░░  ██░░░░██
-██░░░░░░░░          ░░░░░░░░██
-  ████                  ████
-      ██████████████████
-```; 
+        params.textAreaContent = `I honor you, brave adventurer, with this beautiful fox medal:
+
+🟦🟦🟧🟦🟦🟦🟦🟧🟦🟦
+🟦🟦🟧🟧🟦🟦🟧🟧🟦🟦
+🟦🟦🟧⬜🟧🟧⬜🟧🟦🟦
+🟦🟦🟧🟧🟧🟧🟧🟧🟦🟦
+🟦🟧🟧⬛🟧🟧⬛🟧🟧🟦
+🟦🟧🟧⬛🟧🟧⬛🟧🟧🟦
+🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧
+🟦🟧🟧🟧⬛⬛🟧🟧🟧🟦
+🟦🟦🟦🟧🟧🟧🟧🟦🟦🟦
+`; 
       }
       return wallet.request({
         method: 'snap_confirm',
@@ -70,6 +66,21 @@ export const onRpcRequest: OnRpcRequestHandler = async (args) => {
           params,
         ],
       });
+    case 'reset': 
+      const decision = await wallet.request({ 
+        method: 'snap_confirm', 
+        params: [
+          { 
+            prompt: 'Start over?', 
+            description: 'If you do this, your progress will be reset.', 
+            textAreaContent: 'Click APPROVE to clear your progress and start over.',
+          }
+        ], 
+      }); 
+      if(decision) { 
+        await resetProgress(); 
+      }
+      return decision; 
     default:
       throw new Error('Method not found.');
   }
