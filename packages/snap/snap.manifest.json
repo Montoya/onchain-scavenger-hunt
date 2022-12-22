@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Onchain Scavenger Hunt",
   "proposedName": "Onchain Scavenger Hunt",
   "repository": {
@@ -7,7 +7,7 @@
     "url": "https://github.com/Montoya/onchain-scavenger-hunt.git"
   },
   "source": {
-    "shasum": "6PBXLcuoQOJVsIOG4lJ0m6j5Tha464WxpJYusK3uKk0=",
+    "shasum": "LOik/m7g0x8ocmaNs8h6XXbgmNGCPoYyFEuO2j06P70=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",

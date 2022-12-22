@@ -2,7 +2,7 @@ import { isObject, hasProperty } from '@metamask/utils';
 import { getProgress, saveProgress } from './progress';
 
 // A static class refactor of https://stackoverflow.com/a/60467595/786389.
-export class MD5 {
+class MD5 {
   private static readonly alphabet = '0123456789abcdef';
 
   public static hash(str?: string): string {
