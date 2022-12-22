@@ -39,17 +39,35 @@ export const onRpcRequest: OnRpcRequestHandler = async (args) => {
           count++; 
         }
       }
+      const params = { 
+        prompt: 'Greetings, adventurer!', 
+        description: 'Here is your progress.', 
+        textAreaContent: ``
+      }
+      if(count >= 0) { 
+        params.prompt = 'Congratulations!'; 
+        params.description = 'You have completed your quest.'; 
+        params.textAreaContent = "I honor you, brave adventurer, with this beautiful fox medal:\n"; 
+        params.textAreaContent += ```                   
+      ██              ██
+    ██  ██          ██  ██
+    ██  ░░██      ██░░  ██
+    ██  ░░░░██████░░░░  ██
+    ██  ████░░░░░░████  ██
+    ████░░░░░░░░░░░░░░████
+    ██░░░░░░░░░░░░░░░░░░██
+    ██░░██░░░░░░░░░░██░░██
+  ██░░░░██░░██████░░██░░░░██
+  ██  ░░██░░░░░░░░  ██░░░░██
+██░░░░░░░░          ░░░░░░░░██
+  ████                  ████
+      ██████████████████
+```; 
+      }
       return wallet.request({
         method: 'snap_confirm',
         params: [
-          {
-            prompt: 
-              'Greetings, adventurer!', 
-            description:
-              'Here is your progress.',
-            textAreaContent:
-              `Your have unlocked ${count} of the ${total} items on your scavenger hunt.`,
-          },
+          params,
         ],
       });
     default:
