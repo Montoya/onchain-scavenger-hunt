@@ -1,8 +1,7 @@
 {
   "name": "onchain-scavenger-hunt",
-  "version": "0.1.0",
-  "private": true,
-  "description": "It's a secret.",
+  "version": "1.0.0",
+  "description": "It's a game.",
   "repository": {
     "type": "git",
     "url": "https://github.com/Montoya/onchain-scavenger-hunt.git"
